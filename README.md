@@ -24,7 +24,7 @@ We use two input kafka topics:
 - "model"
 - "iris"
 
-The "model" topic stores the PMML XML information of the ML model. It can be loaded using the *ModelPublisher.java* class
+The "model" topic stores the PFA json information of the ML model. It can be loaded using the *ModelPublisher.java* class
 
 The "iris" topic contains the real time information on iris features to be checked. Record format is csv and looks like this:
 
