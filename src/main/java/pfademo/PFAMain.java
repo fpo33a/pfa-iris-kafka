@@ -139,11 +139,6 @@ public class PFAMain {
     private void test() {
         try {
             this.initModel("pfa-model.json");
-            /*
-            factory = new PFAEngineFactory();
-            String modelJSON = readModel("pfa-model.json");
-            PFAEngine<Object, Object> engine = factory.engineFromJson(modelJSON);
-            */
 
             // test with data from csv
             List<String> dataLines = Files.readAllLines(Paths.get("Iris.csv"));
