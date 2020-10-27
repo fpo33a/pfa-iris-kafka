@@ -51,8 +51,94 @@ The PFA management part information can be found at https://github.com/modelop/h
 
 ## Tests  ##
 
+
+    -- create topic
     
-
-
-
-  
+    C:\frank\apache-kafka-2.4.1\bin\windows>kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 1 --partitions 2 --topic iris
+    Created topic iris.
+    
+    C:\frank\apache-kafka-2.4.1\bin\windows>kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 1 --partitions 2 --topic iris-virginica
+    Created topic iris-virginica.
+    
+    C:\frank\apache-kafka-2.4.1\bin\windows>kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 1 --partitions 2 --topic iris-others
+    Created topic iris-others.
+    
+    C:\frank\apache-kafka-2.4.1\bin\windows>kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 1 --partitions 2 --topic model
+    Created topic model.
+    
+    -- run model publisher
+    
+    -- check model topic
+    C:\frank\apache-kafka-2.4.1\bin\windows>kafka-console-consumer.bat --bootstrap-server localhost:9092 --from-beginning --topic model
+    {
+      "input": {"type": "record",
+    "name": "Iris",
+    "fields": [
+      {"name": "sepal_length_cm", "type": "double"},
+      {"name": "sepal_width_cm", "type": "double"},
+      {"name": "petal_length_cm", "type": "double"},
+      {"name": "petal_width_cm", "type": "double"},
+      {"name": "class", "type": "string"}
+    ]},
+      "output": "string",
+      "action": [
+    {"if": {"<": ["input.petal_length_cm", 2.5]},
+      "then": {"string": "Iris-setosa"},
+      "else":
+      {"if": {"<": ["input.petal_length_cm", 4.8]},
+    "then": {"string": "Iris-versicolor"},
+    "else":
+    {"if": {"<": ["input.petal_width_cm", 1.7]},
+      "then": {"string": "Iris-versicolor"},
+      "else": {"string": "Iris-virginica"}}
+      }
+    }
+      ]
+    }
+    Processed a total of 1 messages
+    Terminer le programme de commandes (O/N) ? o
+    
+    -- produce some data
+    C:\frank\apache-kafka-2.4.1\bin\windows>kafka-console-producer.bat --broker-list localhost:9092 --topic iris
+    >5.4,3.9,1.7,0.4,Iris-setosa
+    >6.3,3.3,6.0,2.5,Iris-virginica
+    >5.7,2.8,4.1,1.3,Iris-versicolor
+    
+    -- check results
+    C:\frank\apache-kafka-2.4.1\bin\windows>kafka-console-consumer.bat --bootstrap-server localhost:9092 --from-beginning --topic iris
+    5.4,3.9,1.7,0.4,Iris-setosa
+    6.3,3.3,6.0,2.5,Iris-virginica
+    5.7,2.8,4.1,1.3,Iris-versicolor
+    Processed a total of 3 messages
+    Terminer le programme de commandes (O/N)Â ? o
+    
+    C:\frank\apache-kafka-2.4.1\bin\windows>kafka-console-consumer.bat --bootstrap-server localhost:9092 --from-beginning --topic iris-others
+    5.4,3.9,1.7,0.4,Iris-setosa
+    5.7,2.8,4.1,1.3,Iris-versicolor
+    Processed a total of 2 messages
+    Terminer le programme de commandes (O/N)Â ? o
+    
+    C:\frank\apache-kafka-2.4.1\bin\windows>kafka-console-consumer.bat --bootstrap-server localhost:9092 --from-beginning --topic iris-virginica
+    6.3,3.3,6.0,2.5,Iris-virginica
+    Processed a total of 1 messages
+    Terminer le programme de commandes (O/N)Â ? o
+    
+    
+    -- program output
+    ****************************** <-- initial model loaded
+    *** Initializing model ... ***
+    ******************************
+    ==> input: 5.4,3.9,1.7,0.4,Iris-setosa
+    ==> Result: "Iris-setosa"
+    ==> input: 6.3,3.3,6.0,2.5,Iris-virginica
+    ==> Result: "Iris-virginica"
+    ==> input: 5.7,2.8,4.1,1.3,Iris-versicolor
+    ==> Result: "Iris-versicolor"
+    ******************************  <-- load new model
+    *** Initializing model ... ***
+    ******************************
+    ==> input: 6.3,3.3,6.0,2.5,Iris-virginica   <-- test with new model
+    ==> Result: "Iris-virginica"
+    
+    Process finished with exit code -1
+    
